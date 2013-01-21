@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 COLOR_BLACK = 30
 COLOR_RED = 31
 COLOR_GREEN = 32
