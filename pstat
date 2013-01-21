@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+import sys
+import json
+import time
+
+import tty
+import qstat
+
+def state_color(s):
+	if "E" in s: return 31
+	if "T" in s: return 31
+	if "d" in s: return 34
+	if "t" in s: return 31
+	if "h" in s: return 35
+	if "q" in s: return 33
+	if "r" in s: return 32
+	if "t" in s: return 37
+	return None
+
+
+DEFAULT_TABLE_FORMAT = [
+	 {
+		 'key':     'number'
+		,'title':   'job-ID'
+		,'format':  lambda x: "{:d}".format(x)
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'priority'
+		,'title':   'prio'
+		,'format':  lambda x: "{:0.5f}".format(x)
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'name'
+		,'title':   'name'
+		,'format':  lambda x: x
+		,'color': lambda x: 34
+	 }
+	,{
+		 'key':     'owner'
+		,'title':   'user'
+		,'format':  lambda x: x
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'state'
+		,'title':   'state'
+		,'format':  lambda x: x
+		,'color': state_color
+	 }
+	,{
+		 'key':     't_submit'
+		,'title':   't_submit'
+		,'format':  lambda x: x
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     't_start'
+		,'title':   't_start'
+		,'format':  lambda x: x
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'queue'
+		,'title':   'queue'
+		,'format':  lambda x: x
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'slots'
+		,'title':   'slots'
+		,'format':  lambda x: "{:d}".format(x)
+		,'color': lambda x: None
+	 }
+	,{
+		 'key':     'tasks'
+		,'title':   'tasks'
+		,'format':  lambda x: "{:d}".format(x)
+		,'color': lambda x: None
+	 }
+]
+
+
+
+jobs = qstat.parse_xml(sys.stdin)
+
+def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
+
+	header = [ col['title'] for col in table_format ]
+	body = [ [ col['format'](job[col['key']]) if job[col['key']] else "" for col in table_format ] for job in jobs]
+
+	return [header] + body
+
+
+tbl = job_table(jobs)
+print(tty.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
+
+if len(jobs) == 1:
+	print("1 job total.")
+else:
+	print("{0} jobs total.".format(len(jobs)))
+
