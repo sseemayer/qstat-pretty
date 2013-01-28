@@ -19,6 +19,8 @@ def state_color(s):
 	return None
 
 
+DATE_FORMAT = lambda d: d.strftime('%m-%d %H:%M:%S')
+
 DEFAULT_TABLE_FORMAT = [
 	 {
 		 'key':     'number'
@@ -53,13 +55,13 @@ DEFAULT_TABLE_FORMAT = [
 	,{
 		 'key':     't_submit'
 		,'title':   't_submit'
-		,'format':  lambda x: x
+		,'format':  DATE_FORMAT
 		,'color': lambda x: None
 	 }
 	,{
 		 'key':     't_start'
 		,'title':   't_start'
-		,'format':  lambda x: x
+		,'format':  DATE_FORMAT
 		,'color': lambda x: None
 	 }
 	,{

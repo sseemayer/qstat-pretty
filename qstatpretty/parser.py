@@ -1,10 +1,13 @@
 
 from collections import OrderedDict, defaultdict
+from datetime import datetime
 import xml.etree.ElementTree as ET
 
 def parse_xml(f):
 	xml = ET.parse(f)
 	root = xml.getroot()
+
+	parse_time = lambda t: datetime.strptime(t,  '%Y-%m-%dT%H:%M:%S')
 
 	def process_job(j):
 		fields = {
@@ -13,8 +16,8 @@ def parse_xml(f):
 			,'name': ('JB_name', str)
 			,'owner': ('JB_owner', str)
 			,'state': ('state', str)
-			,'t_submit': ('JB_submission_time', str)
-			,'t_start': ('JAT_start_time', str)
+			,'t_submit': ('JB_submission_time', parse_time)
+			,'t_start': ('JAT_start_time', parse_time)
 			,'queue': ('queue_name', str)
 			,'slots': ('slots', int)
 			,'tasks': ('JB_ja_tasks', int)
