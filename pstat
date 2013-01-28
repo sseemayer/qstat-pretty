@@ -30,7 +30,7 @@ DEFAULT_TABLE_FORMAT = [
 	 }
 	,{
 		 'key':     'priority'
-		,'title':   'prio'
+		,'title':   'priorty'
 		,'format':  lambda x: "{:0.5f}".format(x)
 		,'color': lambda x: None
 	 }
