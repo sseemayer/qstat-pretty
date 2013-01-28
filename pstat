@@ -8,14 +8,14 @@ import qstatpretty.ttyutil as tty
 import qstatpretty.parser as parser
 
 def state_color(s):
-	if "E" in s: return 31
-	if "T" in s: return 31
-	if "d" in s: return 34
-	if "t" in s: return 31
-	if "h" in s: return 35
-	if "q" in s: return 33
-	if "r" in s: return 32
-	if "t" in s: return 37
+	if "E" in s: return tty.COLOR_RED
+	if "T" in s: return tty.COLOR_RED
+	if "d" in s: return tty.COLOR_BLUE
+	if "t" in s: return tty.COLOR_RED
+	if "h" in s: return tty.COLOR_MAGENTA
+	if "q" in s: return tty.COLOR_YELLOW
+	if "r" in s: return tty.COLOR_GREEN
+	if "t" in s: return tty.COLOR_CYAN
 	return None
 
 
@@ -38,7 +38,7 @@ DEFAULT_TABLE_FORMAT = [
 		 'key':     'name'
 		,'title':   'name'
 		,'format':  lambda x: x
-		,'color': lambda x: 34
+		,'color': lambda x: tty.COLOR_BLUE
 	 }
 	,{
 		 'key':     'owner'
