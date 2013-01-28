@@ -4,18 +4,19 @@ import sys
 import json
 import time
 
-import qstatpretty.ttyutil as tty
+import qstatpretty.ttyutil.color as ttycolor
+import qstatpretty.ttyutil.table as ttytable
 import qstatpretty.parser as parser
 
 def state_color(s):
-	if "E" in s: return tty.COLOR_RED
-	if "T" in s: return tty.COLOR_RED
-	if "d" in s: return tty.COLOR_BLUE
-	if "t" in s: return tty.COLOR_RED
-	if "h" in s: return tty.COLOR_MAGENTA
-	if "q" in s: return tty.COLOR_YELLOW
-	if "r" in s: return tty.COLOR_GREEN
-	if "t" in s: return tty.COLOR_CYAN
+	if "E" in s: return ttycolor.COLOR_RED
+	if "T" in s: return ttycolor.COLOR_RED
+	if "d" in s: return ttycolor.COLOR_BLUE
+	if "t" in s: return ttycolor.COLOR_RED
+	if "h" in s: return ttycolor.COLOR_MAGENTA
+	if "q" in s: return ttycolor.COLOR_YELLOW
+	if "r" in s: return ttycolor.COLOR_GREEN
+	if "t" in s: return ttycolor.COLOR_CYAN
 	return None
 
 
@@ -38,7 +39,7 @@ DEFAULT_TABLE_FORMAT = [
 		 'key':     'name'
 		,'title':   'name'
 		,'format':  lambda x: x
-		,'color': lambda x: tty.COLOR_BLUE
+		,'color': lambda x: ttycolor.COLOR_BLUE
 	 }
 	,{
 		 'key':     'owner'
@@ -115,7 +116,7 @@ def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
 
 if jobs:
 	tbl = job_table(jobs)
-	print(tty.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
+	print(ttytable.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
 
 if len(jobs) == 1:
 	print("1 job total.")

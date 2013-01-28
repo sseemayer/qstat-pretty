@@ -1,15 +1,5 @@
 # -*- coding: utf8 -*-
 
-COLOR_BLACK = 30
-COLOR_RED = 31
-COLOR_GREEN = 32
-COLOR_YELLOW = 33
-COLOR_BLUE = 34
-COLOR_MAGENTA = 35
-COLOR_CYAN = 36
-COLOR_WHITE = 37
-
-
 DELIMITERS_DEFAULT = {
 
 	'header_tl'     : "┌",
@@ -59,13 +49,9 @@ DELIMITERS_MINIMAL = {
 
 }
 
-def colortext(t, color, bold=False):
-	if not color: return t
-
-	x = 1 if bold else 0
-	return "\033[{x};{y}m{text}\033[0m".format(x=x, y=color, text=t)
-
 def pretty_table(tbl, colordef, header_row=True, delimiters=DELIMITERS_DEFAULT ):
+	from .color import COLOR_BLACK, colortext
+
 	d = delimiters
 
 	max_widths = [ max( len(str(c)) for c in col ) for col in zip(*tbl) ]  
@@ -90,25 +76,3 @@ def pretty_table(tbl, colordef, header_row=True, delimiters=DELIMITERS_DEFAULT )
 
 	return pretty_top + "".join( d['body_l'] + d['body_csep_m'].join( row ) + d['body_r'] + "\n" for row in tjust ) + pretty_bottom
 
-def terminal_size():
-    import os
-    env = os.environ
-    def ioctl_GWINSZ(fd):
-        try:
-            import fcntl, termios, struct, os
-            cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
-        except:
-            return
-        return cr
-    cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
-    if not cr:
-        try:
-            fd = os.open(os.ctermid(), os.O_RDONLY)
-            cr = ioctl_GWINSZ(fd)
-            os.close(fd)
-        except:
-            pass
-    if not cr:
-        cr = (env.get('LINES', 25), env.get('COLUMNS', 80))
-
-    return int(cr[1]), int(cr[0])
