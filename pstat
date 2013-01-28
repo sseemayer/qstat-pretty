@@ -83,6 +83,22 @@ DEFAULT_TABLE_FORMAT = [
 ]
 
 
+def empty_cols(tbl):
+	emptycols = set(range(len(tbl[0])))
+
+	for row in tbl:
+		fullcols = set()
+		for col in emptycols:
+			if row[col].strip():
+				fullcols.add(col)
+
+		for col in fullcols: emptycols.remove(col)
+		if not emptycols: break
+
+	return emptycols
+
+def remove_cols(tbl, cols):
+	return [ [ col for i, col in enumerate(row) if i not in cols] for row in tbl ]
 
 jobs = qstat.parse_xml(sys.stdin)
 
@@ -91,7 +107,7 @@ def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
 	header = [ col['title'] for col in table_format ]
 	body = [ [ col['format'](job[col['key']]) if job[col['key']] else "" for col in table_format ] for job in jobs]
 
-	return [header] + body
+	return remove_cols([header] + body, empty_cols(body))
 
 
 tbl = job_table(jobs)
