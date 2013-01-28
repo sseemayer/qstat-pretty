@@ -84,6 +84,8 @@ DEFAULT_TABLE_FORMAT = [
 
 
 def empty_cols(tbl):
+	if not tbl: return set()
+
 	emptycols = set(range(len(tbl[0])))
 
 	for row in tbl:
@@ -109,9 +111,9 @@ def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
 
 	return remove_cols([header] + body, empty_cols(body))
 
-
-tbl = job_table(jobs)
-print(tty.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
+if jobs:
+	tbl = job_table(jobs)
+	print(tty.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
 
 if len(jobs) == 1:
 	print("1 job total.")
