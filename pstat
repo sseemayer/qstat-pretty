@@ -4,8 +4,8 @@ import sys
 import json
 import time
 
-import tty
-import qstat
+import qstatpretty.ttyutil as tty
+import qstatpretty.parser as parser
 
 def state_color(s):
 	if "E" in s: return 31
@@ -102,7 +102,7 @@ def empty_cols(tbl):
 def remove_cols(tbl, cols):
 	return [ [ col for i, col in enumerate(row) if i not in cols] for row in tbl ]
 
-jobs = qstat.parse_xml(sys.stdin)
+jobs = parser.parse_xml(sys.stdin)
 
 def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
 
