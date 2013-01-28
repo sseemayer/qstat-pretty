@@ -120,5 +120,5 @@ if jobs:
 if len(jobs) == 1:
 	print("1 job total.")
 else:
-	print("{0} jobs total.".format(len(jobs)))
+	print("{} jobs total.".format(len(jobs)))
 
