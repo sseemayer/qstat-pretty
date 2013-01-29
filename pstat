@@ -6,6 +6,8 @@ import time
 
 import qstatpretty.ttyutil.color as ttycolor
 import qstatpretty.ttyutil.table as ttytable
+import qstatpretty.ttyutil.shrink as ttyshrink
+import qstatpretty.ttyutil.size as ttysize
 import qstatpretty.parser as parser
 
 def state_color(s):
@@ -20,68 +22,98 @@ def state_color(s):
 	return None
 
 
-DATE_FORMAT = lambda d: d.strftime('%m-%d %H:%M:%S')
+DATE_FORMATS = [
+	('%Y-%m-%d %H:%M:%S', 20),
+	('%m-%d %H:%M:%S', 18),
+	('%a %H:%M:%S', 16),
+	('%H:%M:%S', 10),
+	('%H:%M', 5),
+	('%H', 2),
+	('', 0)
+]
+
+def best_date_format(content, width):
+	return next( df for df in DATE_FORMATS if len(content.strftime(df[0])) <= width)
+
+def date_format(content, width):
+	if not content: return ''
+	return content.strftime(best_date_format(content, width)[0])
+
+def date_value(content, width):
+	if not content: return 0
+	bdf = best_date_format(content, width)
+	return bdf[1] 
 
 DEFAULT_TABLE_FORMAT = [
 	 {
 		 'key':     'number'
 		,'title':   'job-ID'
-		,'format':  lambda x: "{:d}".format(x)
-		,'color': lambda x: None
+		,'color':  lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'priority'
 		,'title':   'priorty'
-		,'format':  lambda x: "{:0.5f}".format(x)
 		,'color': lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'name'
 		,'title':   'name'
-		,'format':  lambda x: x
 		,'color': lambda x: ttycolor.COLOR_BLUE
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'owner'
 		,'title':   'user'
-		,'format':  lambda x: x
 		,'color': lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'state'
 		,'title':   'state'
-		,'format':  lambda x: x
 		,'color': state_color
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     't_submit'
 		,'title':   't_submit'
-		,'format':  DATE_FORMAT
 		,'color': lambda x: None
+		,'ellipsis': date_format
+		,'fval': date_value
 	 }
 	,{
 		 'key':     't_start'
 		,'title':   't_start'
-		,'format':  DATE_FORMAT
 		,'color': lambda x: None
+		,'ellipsis': date_format
+		,'fval': date_value
 	 }
 	,{
 		 'key':     'queue'
 		,'title':   'queue'
-		,'format':  lambda x: x
 		,'color': lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'slots'
 		,'title':   'slots'
-		,'format':  lambda x: "{:d}".format(x)
 		,'color': lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 	,{
 		 'key':     'tasks'
 		,'title':   'tasks'
-		,'format':  lambda x: "{:d}".format(x)
 		,'color': lambda x: None
+		,'ellipsis': ttyshrink.simple_ellipsis()
+		,'fval': ttyshrink.simple_value()
 	 }
 ]
 
@@ -105,17 +137,19 @@ def empty_cols(tbl):
 def remove_cols(tbl, cols):
 	return [ [ col for i, col in enumerate(row) if i not in cols] for row in tbl ]
 
-jobs = parser.parse_xml(sys.stdin)
+jobs = parser.parse_xml(open("qstat_all.xml"))
 
 def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
 
 	header = [ col['title'] for col in table_format ]
-	body = [ [ col['format'](job[col['key']]) if job[col['key']] else "" for col in table_format ] for job in jobs]
+	body = [ [ job[col['key']] if job[col['key']] else "" for col in table_format ] for job in jobs]
 
-	return remove_cols([header] + body, empty_cols(body))
+	#return remove_cols([header] + body, empty_cols(body))
+	return [header] + body
 
 if jobs:
 	tbl = job_table(jobs)
+	tbl = ttyshrink.grow_table(tbl, ttysize.terminal_size()[0], DEFAULT_TABLE_FORMAT, ttytable.DELIMITERS_DEFAULT ) 
 	print(ttytable.pretty_table(tbl, DEFAULT_TABLE_FORMAT))
 
 if len(jobs) == 1:
