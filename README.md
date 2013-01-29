@@ -6,7 +6,9 @@ qstat-pretty is a parser and pretty-printer for the output of the Grid Engine `q
 
   1. Check out qstat-pretty somewhere
   2. Run the following (with `python` being Python 2.7 or later):
-      $ qstat -xml | python pstat
+
+    $ qstat -xml | python pstat
+      
   3. ????
   4. Profit!
 
