@@ -1,10 +1,12 @@
 import operator, math
 
-def simple_value(formatter=str, factor=1, min_width=0, overflow=1):
+def simple_value(formatter=str, factor=1, min_width=0, max_width=None, overflow=1):
 	"""Basic value function for scoring a column width"""
 
 	def sv(content, width):
 		content = formatter(content)
+
+		if max_width and width > max_width: width = max_width
 
 		if width < min_width: return 0
 
