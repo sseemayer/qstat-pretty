@@ -1,17 +1,60 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys
+import subprocess
 
 import qstatpretty.pretty as pretty
 import qstatpretty.parser as parser
+import qstatpretty.passthrough_optparse as ptoptparse
 
 
-jobs = parser.parse_xml(sys.stdin)
+def store_source(option, opt_str, value, parser, source_type):
+    v = (source_type, value)
+    setattr(parser.values, option.dest, v)
+
+
+SOURCES = {
+    'local': lambda x, y: subprocess.Popen(['qstat', '-xml'] + y, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout,
+    'file': lambda x, y: open(x[1], "r") if x[1] != "-" else sys.stdin,
+    'ssh': lambda x, y: subprocess.Popen(['ssh', x[1], 'bash', '-lc', '"source /etc/profile; qstat -xml ' + " ".join(y) + '"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
+}
+
+EPILOG = """
+pstat is a wrapper for the qstat command of Grid Engine that takes the XML output from qstat and pretty-prints it.
+
+All additional options and arguments not understood by pstat itself will be passed on to the qstat command, e.g.
+
+    $ pstat -u johndoe
+
+"""
+
+
+op = ptoptparse.PassThroughOptionParser(version="0.0.1", epilog=EPILOG)
+
+op.add_option(
+    "-X", "--xml-file",
+    action="callback", callback=store_source, callback_args=('file',),
+    dest="source", type="string", default=("local",), nargs=1,
+    help="Load data from XML file"
+)
+
+op.add_option(
+    "-S", "--ssh-host",
+    action="callback", callback=store_source, callback_args=('ssh',),
+    dest="source", type="string", nargs=1,
+    help="Query queue status from an SSH host"
+)
+
+opt, args = op.parse_args()
+
+source = opt.source
+stream = SOURCES[source[0]](source, args)
+
+jobs = parser.parse_xml(stream)
 
 pretty.pretty_table(jobs)
 
 if len(jobs) == 1:
-	print("1 job total.")
+    print("1 job total.")
 else:
-	print("{} jobs total.".format(len(jobs)))
-
+    print("{} jobs total.".format(len(jobs)))
