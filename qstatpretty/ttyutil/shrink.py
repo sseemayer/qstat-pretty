@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 
-ulen = lambda s: len(unicode(s))
-
+from qstatpretty.ttyutil.unicode import unicode, ulen
 
 def simple_value(formatter=str, factor=1, min_width=0, max_width=None, overflow=1):
     """Basic value function for scoring a column width"""

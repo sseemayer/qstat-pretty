@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 
-
-ulen = lambda s: len(unicode(s))
+from qstatpretty.ttyutil.unicode import unicode, ulen
 
 DELIMITERS_DEFAULT = {
 
