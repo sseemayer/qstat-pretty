@@ -2,6 +2,8 @@
 
 qstat-pretty is a parser and pretty-printer for the output of the Grid Engine `qstat` program. It will parse the XML output produced by `qstat -xml` and display it in a table.
 
+![pstat screenshot](http://i.imgur.com/my413lq.png)
+
 Some nice features:
 
   * No fixed-length cutoff for job names!
