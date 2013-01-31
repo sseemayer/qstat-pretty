@@ -13,13 +13,17 @@ qstat-pretty requires Python 2.7 or later (Python 3 supported!) and no additiona
 
 qstat-pretty is still in very early development, so give me a message if you have problems getting things to run.
 
+## Basic Usage
+
+    $ pstat
+
 ## Advanced Usage
 
 pstat supports getting job data from three sources: 
 
   * The local system (by running a `qstat` command) (default!)
   * Another host (by running `qstat` via `ssh`) (use the `-S [hostname]` option)
-  * An XML file (use the `-X [xmlfile` option)
+  * An XML file (use the `-X [xmlfile]` option)
 
 All other parameters passed to pstat will be passed on to the qstat command. Examples:
 
