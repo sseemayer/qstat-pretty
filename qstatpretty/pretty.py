@@ -15,9 +15,6 @@ def state_color(s):
     if "d" in s:
         return ttycolor.COLOR_BLUE
 
-    if "t" in s:
-        return ttycolor.COLOR_RED
-
     if "h" in s:
         return ttycolor.COLOR_MAGENTA
 
