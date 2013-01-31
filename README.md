@@ -25,16 +25,16 @@ All other parameters passed to pstat will be passed on to the qstat command. Exa
 
   * Show my job status on the current system:
 
-      $ pstat
+        $ pstat
 
   * Show my job status on the cluster head node reachable by `ssh clustmaster`:
 
-      $ pstat -S clustmaster
+        $ pstat -S clustmaster
 
   * Show job status for all users on clustmaster:
 
-      $ pstat -S clustmaster -u "*"
+        $ pstat -S clustmaster -u "*"
 
   * Show job status on clustmaster for user jdoe:
 
-      $ pstat -S clustmaster -u jdoe
+        $ pstat -S clustmaster -u jdoe
