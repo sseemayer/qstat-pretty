@@ -30,12 +30,12 @@ def parse_xml(f):
                 return None
 
 
-	jobs = {}
+        jobs = {}
 
-	for key, tag in fields.items():
-		jobs[key] = tagtext(j.find(tag[0]), tag[1])
+        for key, tag in fields.items():
+                jobs[key] = tagtext(j.find(tag[0]), tag[1])
 
-	return jobs
+        return jobs
 
         #return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
 
