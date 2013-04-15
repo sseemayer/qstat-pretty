@@ -29,7 +29,15 @@ def parse_xml(f):
             else:
                 return None
 
-        return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
+
+	jobs = {}
+
+	for key, tag in fields.items():
+		jobs[key] = tagtext(j.find(tag[0]), tag[1])
+
+	return jobs
+
+        #return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
 
     job_lists = itertools.chain( root.find('queue_info'), root.find('job_info'))
 

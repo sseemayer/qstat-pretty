@@ -58,7 +58,7 @@ def float_ellipse(content, width):
         width = 7
 
     if width > 2:
-        return "{:.{}f}".format(content, width - 2)
+        return "{0:.{1}f}".format(content, width - 2)
     else:
         return str(content)[0:width]
 
