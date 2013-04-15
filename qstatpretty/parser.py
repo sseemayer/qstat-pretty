@@ -1,5 +1,6 @@
 from datetime import datetime
 import xml.etree.ElementTree as ET
+import itertools
 
 
 def parse_xml(f):
@@ -30,6 +31,8 @@ def parse_xml(f):
 
         return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
 
-    jobs = [process_job(job_list) for job_list in root.find('queue_info')]
+    job_lists = itertools.chain( root.find('queue_info'), root.find('job_info'))
+
+    jobs = [process_job(job_list) for job_list in job_lists]
 
     return jobs
