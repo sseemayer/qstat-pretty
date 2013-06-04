@@ -59,7 +59,7 @@ def pretty_table(tbl, colordef, header_row=True, delimiters=DELIMITERS_DEFAULT):
 
     max_widths = [max(ulen(c) for c in col) for col in zip(*tbl)]
 
-    tjust = [[u"{:{}s}".format(c, w) for w, c in zip(max_widths, row)] for row in tbl]
+    tjust = [[u"{0:{1}s}".format(c, w) for w, c in zip(max_widths, row)] for row in tbl]
 
     pretty_top = d['header_tl'] + d['header_csep_t'].join(d['header_t'] * w for w in max_widths) + d['header_tr'] + "\n"
     pretty_bottom = d['body_bl'] + d['body_csep_b'].join(d['body_b'] * w for w in max_widths) + d['body_br']

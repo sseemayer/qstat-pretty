@@ -13,7 +13,7 @@ Some nice features:
 
 ## Getting started
 
-qstat-pretty requires Python 2.7 or later (Python 3 supported!) and no additional modules.
+qstat-pretty requires Python 2.6 or later (Python 3 supported!) and no additional modules.
 
   1. Check out qstat-pretty somewhere
   2. Run `python setup.py build` as non-root

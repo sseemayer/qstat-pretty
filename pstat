@@ -68,4 +68,4 @@ pretty.pretty_table(jobs)
 if len(jobs) == 1:
     print("1 job total.")
 else:
-    print("{} jobs total.".format(len(jobs)))
+    print("{0} jobs total.".format(len(jobs)))
