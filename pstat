@@ -49,6 +49,13 @@ op.add_option(
     help="Query queue status from an SSH host"
 )
 
+op.add_option(
+    "-L", "--local",
+    action="callback", callback=store_source, callback_args=('local',),
+    dest="source", #type="string", nargs=0,
+    help="Query queue status from the local machine"
+)
+
 opt, args = op.parse_args()
 
 source = opt.source
