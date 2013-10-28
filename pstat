@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import collections
 import sys
 import subprocess
 
@@ -63,9 +64,13 @@ stream = SOURCES[source[0]](source, args)
 
 jobs = parser.parse_xml(stream)
 
+job_states = collections.defaultdict(int)
+for job in jobs:
+    job_states[job['state']] += 1
+
 pretty.pretty_table(jobs)
 
 if len(jobs) == 1:
     print("1 job total.")
 else:
-    print("{0} jobs total.".format(len(jobs)))
+    print("{0} jobs total ({1}).".format(len(jobs), ", ".join("{0}: {1}".format(k, job_states[k]) for k in sorted(job_states.keys())) ))
