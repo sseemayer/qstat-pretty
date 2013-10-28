@@ -20,7 +20,7 @@ def parse_xml(f):
             't_start': ('JAT_start_time', parse_time),
             'queue': ('queue_name', str),
             'slots': ('slots', int),
-            'tasks': ('tasks', int)
+            'tasks': ('tasks', str)
         }
 
         def tagtext(t, f):
