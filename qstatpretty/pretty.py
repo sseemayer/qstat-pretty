@@ -100,15 +100,8 @@ DEFAULT_TABLE_FORMAT = [
         'fval': ttyshrink.simple_value(factor=100, max_width=5)
     },
     {
-        'key': 't_submit',
-        'title': 'submitted',
-        'color': lambda x: None,
-        'ellipsis': date_ellipse,
-        'fval': ttyshrink.simple_value(factor=2, max_width=20)
-    },
-    {
-        'key': 't_start',
-        'title': 'started',
+        'key': 't_submit_start',
+        'title': 'submitted/started',
         'color': lambda x: None,
         'ellipsis': date_ellipse,
         'fval': ttyshrink.simple_value(factor=2, max_width=20)

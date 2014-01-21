@@ -35,6 +35,8 @@ def parse_xml(f):
         for key, tag in fields.items():
                 jobs[key] = tagtext(j.find(tag[0]), tag[1])
 
+	jobs['t_submit_start'] = jobs['t_submit'] or jobs['t_start']
+
         return jobs
 
         #return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
