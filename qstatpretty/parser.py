@@ -7,20 +7,21 @@ def parse_xml(f):
     xml = ET.parse(f)
     root = xml.getroot()
 
-    parse_time = lambda t: datetime.strptime(t,  '%Y-%m-%dT%H:%M:%S')
+    def parse_time(t):
+        return datetime.fromtimestamp(float(t))
 
     def process_job(j):
         fields = {
-            'number': ('JB_job_number', int),
-            'priority': ('JAT_prio', float),
-            'name': ('JB_name', str),
-            'owner': ('JB_owner', str),
-            'state': ('state', str),
-            't_submit': ('JB_submission_time', parse_time),
-            't_start': ('JAT_start_time', parse_time),
-            'queue': ('queue_name', str),
-            'slots': ('slots', int),
-            'tasks': ('tasks', str)
+            'number': ('Job_Id', str),
+            'priority': ('Priority', int),
+            'name': ('Job_Name', str),
+            'owner': ('Job_Owner', str),
+            'state': ('job_state', str),
+            't_submit': ('qtime', parse_time),
+            't_start': ('start_time', parse_time),
+            'queue': ('queue', str),
+            't_comp': ('mtime', parse_time),
+            'host': ('submit_host', str),
         }
 
         def tagtext(t, f):
@@ -29,20 +30,24 @@ def parse_xml(f):
             else:
                 return None
 
-
         jobs = {}
 
         for key, tag in fields.items():
-                jobs[key] = tagtext(j.find(tag[0]), tag[1])
+            jobs[key] = tagtext(j.find(tag[0]), tag[1])
 
-	jobs['t_submit_start'] = jobs['t_submit'] or jobs['t_start']
+        jobs['t_submit_start'] = jobs['t_submit'] or jobs['t_start']
+        try:
+            jobs['t_comp'] = jobs['t_comp'] - jobs['t_submit_start']
+        except TypeError:
+            pass  # no comp time (most likely)
+
+        # remove HOST
+        jobs['owner'] = jobs['owner'].replace(jobs['host'], 'HOST')
+        jobs['number'] = jobs['number'].replace(jobs['host'], 'HOST')
 
         return jobs
 
-        #return {key: tagtext(j.find(tag[0]), tag[1]) for key, tag in fields.items()}
-
-    job_lists = itertools.chain( root.find('queue_info'), root.find('job_info'))
-
-    jobs = [process_job(job_list) for job_list in job_lists]
+    job_list = root.iter('Job')
+    jobs = [process_job(job) for job in job_list]
 
     return jobs
