@@ -1,23 +1,26 @@
 # qstat-pretty
 
-qstat-pretty is a parser and pretty-printer for the output of the Grid Engine `qstat` program. It will parse the XML output produced by `qstat -xml` and display it in a table.
+NOTE: This fork is for use with the Torque Resource Manager, not GridEngine
 
-![pstat screenshot](http://i.imgur.com/my413lq.png)
+qstat-pretty is a parser and pretty-printer for the output of the Grid Engine `qstat` program. It will parse the XML output produced by `qstat -x` and display it in a table.
+
+
+![pstat screenshot](http://i.imgur.com/WkYaAyt.png)
 
 Some nice features:
 
-  * No fixed-length cutoff for job names!
-  * Pretty tables with borders and coloring
-  * Tables automatically grow with terminal width
+  * Table automatically grows with the size of the columns
+  * Minimalistic tables
   * Can query local and remote grid status using SSH
 
 ## Getting started
 
 qstat-pretty requires Python 2.6 or later (Python 3 supported!) and no additional modules.
 
+To use locally:
   1. Check out qstat-pretty somewhere
   2. Run `python setup.py build` as non-root
-  3. Run `python setup.py install` as root
+  3. Link the pstat executable to your bin directory `ln -s "$(pwd)/pstat" ~/local/bin/`
   4. You can now use the `pstat` command.
 
 qstat-pretty is still in very early development, so give me a message if you have problems getting things to run.
