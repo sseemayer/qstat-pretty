@@ -45,12 +45,6 @@ def date_ellipse(content, width):
     return content.strftime(best_date_format(content, width)[0])
 
 
-def date_delta(content, width):
-    if not content:
-        return ''
-    return str(content)
-
-
 def float_ellipse(content, width):
     if width > 7:
         width = 7
@@ -111,12 +105,19 @@ DEFAULT_TABLE_FORMAT = [
         'key': 't_comp',
         'title': 'runtime',
         'color': lambda x: None,
-        'ellipsis': date_delta,
+        'ellipsis': ttyshrink.simple_ellipsis(),
         'fval': ttyshrink.simple_value(factor=2, max_width=20)
     },
     {
-        'key': 't_submit_start',
-        'title': 'submitted/started',
+        'key': 't_start',
+        'title': 'started',
+        'color': lambda x: None,
+        'ellipsis': date_ellipse,
+        'fval': ttyshrink.simple_value(factor=2, max_width=25, overflow=1)
+    },
+    {
+        'key': 't_submit',
+        'title': 'submitted',
         'color': lambda x: None,
         'ellipsis': date_ellipse,
         'fval': ttyshrink.simple_value(factor=2, max_width=25, overflow=1)

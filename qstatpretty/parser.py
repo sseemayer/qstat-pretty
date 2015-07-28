@@ -1,6 +1,7 @@
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import itertools
+import time
 
 
 def parse_xml(f):
@@ -20,7 +21,6 @@ def parse_xml(f):
             't_submit': ('qtime', parse_time),
             't_start': ('start_time', parse_time),
             'queue': ('queue', str),
-            't_comp': ('mtime', parse_time),
             'host': ('submit_host', str),
         }
 
@@ -37,9 +37,10 @@ def parse_xml(f):
 
         jobs['t_submit_start'] = jobs['t_submit'] or jobs['t_start']
         try:
-            jobs['t_comp'] = jobs['t_comp'] - jobs['t_submit_start']
-        except TypeError:
-            pass  # no comp time (most likely)
+            cput = next(j.iter('cput')).text
+            jobs['t_comp'] = cput
+        except StopIteration:
+            jobs['t_comp'] = ''
 
         # remove HOST
         jobs['owner'] = jobs['owner'].replace(jobs['host'], 'HOST')
