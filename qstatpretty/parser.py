@@ -39,7 +39,7 @@ class Parser(object):
         }
 
         stream = SOURCES[source[0]](source)
-        stream = ''.join(stream.readlines())
+        stream = ''.join(stream.read())
 
         result = re.search(r'(-x)\s+(.*?XML.*?)\.', stream)
         if result is not None:
