@@ -19,15 +19,28 @@ def store_source(option, opt_str, value, parser, source_type):
 
 
 SOURCES = {
-    'local': lambda x, y: subprocess.Popen(['qstat', '-x'] + y, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout,
-    'file': lambda x, y: open(x[1], "r") if x[1] != "-" else sys.stdin,
-    'ssh': lambda x, y: subprocess.Popen(['ssh', x[1], 'bash', '-lc', '"source /etc/profile; qstat -xml ' + " ".join(shellquote(e) for e in y) + '"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout
+    'local': lambda x, y, z: subprocess.Popen(
+        z + y,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    ).stdout,
+    'file': lambda x, y, z: open(x[1], "r") if x[1] != "-" else sys.stdin,
+    'ssh': lambda x, y, z: subprocess.Popen(
+        [
+            'ssh', x[1], 'bash', '-lc',
+            '"source /etc/profile; {} ' +
+            " ".join(z) +
+            " ".join(shellquote(e) for e in y) + '"'
+        ],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ).stdout
 }
 
 EPILOG = """
-pstat is a wrapper for the qstat command of Grid Engine that takes the XML output from qstat and pretty-prints it.
+pstat is a wrapper for the qstat command of Grid Engine.
+It takes the XML output from qstat and pretty-prints it.
 
-All additional options and arguments not understood by pstat itself will be passed on to the qstat command, e.g.
+All additional non-pstat options will be passed to qstat:
 
     $ pstat -u johndoe
 
@@ -60,9 +73,11 @@ op.add_option(
 opt, args = op.parse_args()
 
 source = opt.source
-stream = SOURCES[source[0]](source, args)
+parser_obj = parser.Parser.getParser(source)
+parser_obj = parser.ParserTorque()
+stream = SOURCES[source[0]](source, args, parser_obj.getCmd())
 
-jobs = parser.parse_xml(stream)
+jobs = parser_obj.parse_xml(stream)
 
 job_states = collections.defaultdict(int)
 for job in jobs:
@@ -70,14 +85,21 @@ for job in jobs:
 
 pretty.pretty_table(jobs)
 
-if len(jobs) == 1:
-    print("1 job total.")
-elif len(jobs) == 0:
-    print("0 jobs total.")
-else:
-    print("{0} jobs total on host '{2}' ({1}).".format(
-        len(jobs),
-        ", ".join("{0}: {1}".format(k, job_states[k])
-                  for k in sorted(job_states.keys())),
-        jobs[0]['host'],
-    ))
+# Setup summary message
+summary_msg = "{parser}\n{n_jobs} job{plural} total"
+summary = {
+    'parser': str(parser_obj),
+    'n_jobs': len(jobs),
+    'plural': 's' if len(jobs) != 1 else ''
+}
+plural = 's' if len(jobs) != 1 else ''
+if len(jobs) > 0:
+    summary_msg = summary_msg + " on host '{host}' ({states})."
+    summary['host'] = jobs[0]['host']
+    summary['states'] = ", ".join(
+        "{0}: {1}".format(k, job_states[k])
+        for k in sorted(job_states.keys())
+    )
+
+# Print qstat summary
+print(summary_msg.format(**summary))

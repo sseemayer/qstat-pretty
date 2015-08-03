@@ -24,8 +24,10 @@ def simple_value(formatter=str, factor=1, min_width=0, max_width=None, overflow=
 def simple_ellipsis(formatter=str):
     """Basic ellipsis function for scaling a cell"""
 
-    def se(content, width):
+    def se(content, width=None):
         content = formatter(content)
+        if width is None:
+            width = len(content)
 
         if(ulen(content) <= width):
             return content
@@ -95,10 +97,30 @@ def grow_table(tbl, width, tbldef, delimiters):
 
 def fit_table(tbl, width, tbldef, delimiters):
     '''Pad cells to match maximum column width and stretch delimiters'''
-    max_widths = [max(len(str(c)) for c in col) for col in zip(*tbl)]
+
+    for col in zip(*tbl):
+        for cx, c in enumerate(col):
+            print(tbldef[cx]['ellipsis'](c))
+    max_widths = [
+        max(len(tbldef[cx]['ellipsis'](c)) for cx, c in enumerate(col))
+        for col in zip(*tbl)
+    ]
     for rx, row in enumerate(tbl):
         for cx, (w, cell) in enumerate(zip(max_widths, row)):
-            tbl[rx][cx] = "{0: <{1}}".format(str(cell), w)
+            print("{} ({}, {}): {}".format(
+                tbl[0][cx], rx, cx, cell
+            ))
+            if rx > 0:
+                try:
+                    tbl[rx][cx] = tbldef[cx]['ellipsis'](cell)
+                except TypeError:
+                    print "---------------------"
+                    print("{} ({}, {}): {}".format(
+                        tbl[0][cx], rx, cx, cell
+                    ))
+                    raise
+            else:
+                tbl[rx][cx] = "{0: <{1}}".format(str(cell), w)
 
     col_width = sum(max_widths)
     sep_width = len(max_widths) - 1

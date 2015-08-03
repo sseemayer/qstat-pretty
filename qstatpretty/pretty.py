@@ -23,6 +23,7 @@ def state_color(s):
 
 
 DATE_FORMATS = [
+    ('%H:%M:%S  %y.%m.%d', 19),
     ('%Y-%m-%d %H:%M:%S', 20),
     ('%m-%d %H:%M:%S', 18),
     ('%a %H:%M:%S', 16),
@@ -38,14 +39,15 @@ def best_date_format(content, width):
     return next(df for df in DATE_FORMATS if len(content.strftime(df[0])) <= width)
 
 
-def date_ellipse(content, width):
+def date_ellipse(content, width=None):
     if not content:
         return ''
 
-    return content.strftime(best_date_format(content, width)[0])
+    return content.strftime(DATE_FORMATS[0][0])
+    # return content.strftime(best_date_format(content, width)[0])
 
 
-def float_ellipse(content, width):
+def float_ellipse(content, width=2):
     if width > 7:
         width = 7
 
@@ -135,7 +137,12 @@ def job_table(jobs, table_format=DEFAULT_TABLE_FORMAT):
     return [header] + body
 
 
-def pretty_table(jobs, terminal_width=ttysize.terminal_size()[0], table_format=DEFAULT_TABLE_FORMAT, delimiters=ttytable.DELIMITERS_PROFESSIONAL):
+def pretty_table(
+    jobs,
+    terminal_width=ttysize.terminal_size()[0],
+    table_format=DEFAULT_TABLE_FORMAT,
+    delimiters=ttytable.DELIMITERS_PROFESSIONAL
+):
 
     if jobs:
         tbl = job_table(jobs, table_format)
