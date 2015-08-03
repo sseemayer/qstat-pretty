@@ -67,7 +67,6 @@ def grow_table(tbl, width, tbldef, delimiters):
 
         scoregain = [scoresum(i, w + 1) - scoresum(i, w) if w >
                      0 else float('Inf') for i, w in enumerate(colwidths)]
-        #print("\t".join( "{:.3f}".format(sg) for sg in scoregain))
 
         bestcol = scoregain.index(max(scoregain))
 
@@ -98,26 +97,16 @@ def grow_table(tbl, width, tbldef, delimiters):
 def fit_table(tbl, width, tbldef, delimiters):
     '''Pad cells to match maximum column width and stretch delimiters'''
 
-    for col in zip(*tbl):
-        for cx, c in enumerate(col):
-            print(tbldef[cx]['ellipsis'](c))
     max_widths = [
         max(len(tbldef[cx]['ellipsis'](c)) for cx, c in enumerate(col))
         for col in zip(*tbl)
     ]
     for rx, row in enumerate(tbl):
         for cx, (w, cell) in enumerate(zip(max_widths, row)):
-            print("{} ({}, {}): {}".format(
-                tbl[0][cx], rx, cx, cell
-            ))
             if rx > 0:
                 try:
                     tbl[rx][cx] = tbldef[cx]['ellipsis'](cell)
                 except TypeError:
-                    print "---------------------"
-                    print("{} ({}, {}): {}".format(
-                        tbl[0][cx], rx, cx, cell
-                    ))
                     raise
             else:
                 tbl[rx][cx] = "{0: <{1}}".format(str(cell), w)
