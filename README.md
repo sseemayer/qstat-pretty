@@ -1,8 +1,6 @@
 # qstat-pretty
 
-NOTE: This fork is for use with the Torque Resource Manager, not GridEngine
-
-qstat-pretty is a parser and pretty-printer for the output of the Grid Engine `qstat` program. It will parse the XML output produced by `qstat -x` and display it in a table.
+qstat-pretty is a parser and pretty-printer for the output of the Grid Engine or Torque Resource Manager `qstat` program. It will parse the XML output produced by `qstat` and display it in a table.
 
 
 ![pstat screenshot](http://i.imgur.com/WkYaAyt.png)
@@ -12,7 +10,7 @@ Some nice features:
   * Table automatically grows with the size of the columns
   * Minimalistic tables
   * Can query local and remote grid status using SSH
-  * Will auto-detect and parse Torque Resource Manager (defaults to original GridEngine parser)
+  * Will auto-detect and parse Torque Resource Manager `qstat` (defaults to original GridEngine parser)
  
 ## Getting started
 
