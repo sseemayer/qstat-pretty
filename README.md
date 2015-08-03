@@ -12,7 +12,8 @@ Some nice features:
   * Table automatically grows with the size of the columns
   * Minimalistic tables
   * Can query local and remote grid status using SSH
-
+  * Will auto-detect and parse Torque Resource Manager (defaults to original GridEngine parser)
+ 
 ## Getting started
 
 qstat-pretty requires Python 2.6 or later (Python 3 supported!) and no additional modules.
