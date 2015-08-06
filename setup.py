@@ -5,7 +5,7 @@ setup(
     version='0.0.1',
     author='Stefan Seemayer',
     author_email='stefan@seemayer.de',
-    license='MIT',
+    license='GPL',
     url='https://github.com/sseemayer/qstat-pretty',
 
     packages=['qstatpretty', 'qstatpretty.ttyutil'],
