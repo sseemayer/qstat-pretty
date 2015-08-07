@@ -1,43 +1,15 @@
 #!/usr/bin/env python
 
 import collections
-import sys
-import subprocess
 
-import qstatpretty.pretty as pretty
-import qstatpretty.parser as parser
+import qstatpretty.source
+import qstatpretty.pretty
+import qstatpretty.parser
 import qstatpretty.passthrough_optparse as ptoptparse
 
 
-def shellquote(s):
-    return "'" + s.replace("'", "'\\''") + "'"
-
-
-def store_source(option, opt_str, value, parser, source_type):
-    v = (source_type, value)
-    setattr(parser.values, option.dest, v)
-
-
-SOURCES = {
-    'local': lambda x, y, z: subprocess.Popen(
-        z + y,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    ).stdout,
-    'file': lambda x, y, z: open(x[1], "r") if x[1] != "-" else sys.stdin,
-    'ssh': lambda x, y, z: subprocess.Popen(
-        [
-            'ssh', x[1], 'bash', '-lc',
-            '"source /etc/profile; {} ' +
-            " ".join(z) +
-            " ".join(shellquote(e) for e in y) + '"'
-        ],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    ).stdout
-}
-
 EPILOG = """
-pstat is a wrapper for the qstat command of Grid Engine.
+pstat is a wrapper for the qstat command of Grid Engine / Torque Resource Manager.
 It takes the XML output from qstat and pretty-prints it.
 
 All additional non-pstat options will be passed to qstat:
@@ -47,55 +19,37 @@ All additional non-pstat options will be passed to qstat:
 """
 
 
-op = ptoptparse.PassThroughOptionParser(version="0.0.1", epilog=EPILOG)
-
-op.add_option(
-    "-X", "--xml-file",
-    action="callback", callback=store_source, callback_args=('file',),
-    dest="source", type="string", default=("local",), nargs=1,
-    help="Load data from XML file"
+parser = ptoptparse.PassThroughOptionParser(version="0.1.0", epilog=EPILOG)
+parser.add_option(
+    "--flavor",
+    dest="flavor",
+    choices=list(qstatpretty.parser.get_parser_names()),
+    help="Choose a flavor of grid system (choices: {choices}) [default: \"%default\"]".format(
+        choices=", ".join(qstatpretty.parser.get_parser_names())
+    )
 )
 
-op.add_option(
-    "-S", "--ssh-host",
-    action="callback", callback=store_source, callback_args=('ssh',),
-    dest="source", type="string", nargs=1,
-    help="Query queue status from an SSH host"
-)
+opt, args = parser.parse_args()
 
-op.add_option(
-    "-L", "--local",
-    action="callback", callback=store_source, callback_args=('local',),
-    dest="source",  # type="string", nargs=0,
-    help="Query queue status from the local machine"
-)
-
-opt, args = op.parse_args()
-
-source = opt.source
-parser_obj = parser.Parser.getParser(source)
-parser_obj = parser.ParserTorque()
-stream = SOURCES[source[0]](source, args, parser_obj.getCmd())
-
-jobs = parser_obj.parse_xml(stream)
+source = qstatpretty.source.source_file("test.xml")
+parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
+jobs = parser.parse_xml(source(parser, args))
 
 job_states = collections.defaultdict(int)
 for job in jobs:
     job_states[job['state']] += 1
 
-pretty.pretty_table(jobs)
+qstatpretty.pretty.pretty_table(jobs, parser.table_columns)
 
 # Setup summary message
-summary_msg = "{parser}\n{n_jobs} job{plural} total"
+summary_msg = "{n_jobs} job{plural} total"
 summary = {
-    'parser': str(parser_obj),
     'n_jobs': len(jobs),
     'plural': 's' if len(jobs) != 1 else ''
 }
-plural = 's' if len(jobs) != 1 else ''
+
 if len(jobs) > 0:
-    summary_msg = summary_msg + " on host '{host}' ({states})."
-    summary['host'] = jobs[0]['host']
+    summary_msg = summary_msg + " ({states})."
     summary['states'] = ", ".join(
         "{0}: {1}".format(k, job_states[k])
         for k in sorted(job_states.keys())

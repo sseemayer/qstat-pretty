@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import math
 
-from qstatpretty.ttyutil.unicode import unicode, ulen
+from qstatpretty.ttyutil.unicode import ulen
 
 
 def simple_value(formatter=str, factor=1, min_width=0, max_width=None, overflow=1):
@@ -42,6 +42,44 @@ def simple_ellipsis(formatter=str):
     return se
 
 
+DATE_FORMATS = [
+    ('%Y-%m-%d %H:%M:%S', 20),
+    ('%m-%d %H:%M:%S', 18),
+    ('%a %H:%M:%S', 16),
+    ('%H:%M:%S', 10),
+    ('%H:%M', 5),
+    ('%Hh', 2),
+    ('%H', 1),
+    ('', 0)
+]
+
+
+def best_date_format(content, width):
+    return next(df for df in DATE_FORMATS if len(content.strftime(df[0])) <= width)
+
+
+def date_ellipse(content, width=None):
+    if width is None:
+        width = float('inf')
+
+    if not content:
+        return ''
+
+    return content.strftime(best_date_format(content, width)[0])
+
+
+def float_ellipse(content, width=2, max_width=7):
+    width = min(width, max_width)
+
+    if width > 2:
+        try:
+            return "{0:.{1}f}".format(content, width - 2)
+        except ValueError:
+            return str(content)[0:width]
+    else:
+        return str(content)[0:width]
+
+
 def grow_table(tbl, width, tbldef, delimiters):
 
     column_overhead = 0
@@ -52,60 +90,67 @@ def grow_table(tbl, width, tbldef, delimiters):
         margin = ulen(d['body_l'] + d['body_r'])
 
     width = width - margin
+    colwidths = [0] * len(tbldef)
 
-    column_score = lambda col, fval, width: sum(fval(c, width) for c in col)
-    column = lambda i: (r[i] for r in tbl[1:])
+    def scoresum(col, width):
+        column = (r[col] for r in tbl[1:])
+        return sum(tbldef[col]['fval'](c, width) for c in column)
 
-    scoresum = lambda col, width: column_score(
-        column(col), tbldef[col]['fval'], width)
+    def nonempty_cols():
+        return sum(1 for i in colwidths if i > 0) - 1
 
-    colwidths = [0 for col in tbldef]
-
-    nonempty_cols = lambda: sum(1 for i in colwidths if i > 0) - 1
-
+    # keep growing until width is reached
     while sum(colwidths) + column_overhead * nonempty_cols() < width:
 
-        scoregain = [scoresum(i, w + 1) - scoresum(i, w) if w >
-                     0 else float('Inf') for i, w in enumerate(colwidths)]
-
+        # determine column that benefits most from growing
+        scoregain = [
+            scoresum(i, w + 1) - scoresum(i, w)
+            if w > 0 else float('Inf')
+            for i, w in enumerate(colwidths)
+        ]
         bestcol = scoregain.index(max(scoregain))
 
+        # grow best column
         colwidths[bestcol] += 1
 
-    def format_col(i, c):
+    def format_cell(i, c, ellipsis_fn):
         if colwidths[i]:
-            cf = tbldef[i]['ellipsis'](c, colwidths[i])
+            cf = ellipsis_fn(c, colwidths[i])
             return cf + " " * (colwidths[i] - ulen(cf))
         else:
             return ""
 
-    def format_hdr(i, c):
-        if colwidths[i]:
-            cf = simple_ellipsis()(c, colwidths[i])
-            return cf + " " * (colwidths[i] - ulen(cf))
-        else:
-            return ""
+    header = [
+        format_cell(i, c, simple_ellipsis())
+        for i, c in enumerate(tbl[0])
+        if colwidths[i] > 0
+    ]
 
-    header = [format_hdr(i, c)
-              for i, c in enumerate(tbl[0]) if colwidths[i] > 0]
-    body = [[format_col(i, c) for i, c in enumerate(
-        row) if colwidths[i] > 0] for row in tbl[1:]]
+    body = [
+        [
+            format_cell(i, c, tbldef[i]['ellipsis'])
+            for i, c in enumerate(row)
+            if colwidths[i] > 0
+        ]
+        for row in tbl[1:]
+    ]
 
-    return [header] + body
+    return [header] + body, delimiters
 
 
 def fit_table(tbl, width, tbldef, delimiters):
     '''Pad cells to match maximum column width and stretch delimiters'''
 
     max_widths = [
-        max(len(tbldef[cx]['ellipsis'](c)) for cx, c in enumerate(col))
-        for col in zip(*tbl)
+        max(len(tbldef[cx]['ellipsis'](c)) for c in col[1:])
+        for cx, col in enumerate(zip(*tbl))
     ]
+
     for rx, row in enumerate(tbl):
         for cx, (w, cell) in enumerate(zip(max_widths, row)):
             if rx > 0:
                 try:
-                    tbl[rx][cx] = tbldef[cx]['ellipsis'](cell)
+                    tbl[rx][cx] = tbldef[cx]['ellipsis'](cell, width=w)
                 except TypeError:
                     raise
             else:
@@ -118,6 +163,7 @@ def fit_table(tbl, width, tbldef, delimiters):
     while n_sep < max_sep and (col_width + sep_width * n_sep) < width:
         n_sep += 1
     seps = ('header_csep_m', 'header_csep_b', 'body_csep_m')
+
     for sep in seps:
         delimiters[sep] = delimiters[sep] * n_sep
 
