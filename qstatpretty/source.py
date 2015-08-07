@@ -19,7 +19,7 @@ def source_local():
         commandline = parser.suggest_commandline(args)
 
         with subprocess.Popen(commandline, stdout=subprocess.PIPE) as proc:
-            return StringIO(proc.stdout.read())
+            return StringIO(proc.stdout.read().decode('utf-8'))
 
     return get
 
@@ -29,6 +29,6 @@ def source_ssh(hostname, ssh_args=[]):
         commandline = ['ssh', hostname] + ssh_args + ['--'] + parser.suggest_commandline(args)
 
         with subprocess.Popen(commandline, stdout=subprocess.PIPE) as proc:
-            return StringIO(proc.stdout.read())
+            return StringIO(proc.stdout.read().decode('utf-8'))
 
     return get
