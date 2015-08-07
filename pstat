@@ -8,6 +8,10 @@ import qstatpretty.parser
 import qstatpretty.passthrough_optparse as ptoptparse
 
 
+def cb_source(option, opt, value, parser, source_type):
+    parser.values.source = source_type(value)
+
+
 EPILOG = """
 pstat is a wrapper for the qstat command of Grid Engine / Torque Resource Manager.
 It takes the XML output from qstat and pretty-prints it.
@@ -29,11 +33,42 @@ parser.add_option(
     )
 )
 
+parser.add_option(
+    "--source-local",
+    dest="source",
+    action="store_const",
+    const=qstatpretty.source.source_local(),
+    help="Get job status from a locally running grid manager"
+)
+
+parser.add_option(
+    "--source-ssh",
+    dest="source",
+    action="callback",
+    callback=cb_source,
+    callback_args=(qstatpretty.source.source_ssh,),
+    nargs=1,
+    type=str,
+    metavar="HOSTNAME",
+    help="Get job status by querying via SSH to HOSTNAME"
+)
+
+parser.add_option(
+    "--source-file",
+    dest="source",
+    action="callback",
+    callback=cb_source,
+    callback_args=(qstatpretty.source.source_file,),
+    nargs=1,
+    type=str,
+    metavar="FILENAME",
+    help="Get job status by parsing FILENAME"
+)
+
 opt, args = parser.parse_args()
 
-source = qstatpretty.source.source_file("test.xml")
 parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
-jobs = parser.parse_xml(source(parser, args))
+jobs = parser.parse_xml(opt.source(parser, args))
 
 job_states = collections.defaultdict(int)
 for job in jobs:
