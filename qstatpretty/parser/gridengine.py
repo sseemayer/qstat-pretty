@@ -46,7 +46,11 @@ class GridEngineParser(object):
 
     @staticmethod
     def parse_xml(f):
-        xml = ET.parse(f)
+        try:
+            xml = ET.parse(f)
+        except ET.ParseError:
+            return []  # no jobs!
+
         root = xml.getroot()
 
         job_lists = itertools.chain(root.find('queue_info'), root.find('job_info'))
