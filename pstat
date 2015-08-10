@@ -5,6 +5,7 @@ import collections
 import qstatpretty.source
 import qstatpretty.pretty
 import qstatpretty.parser
+import qstatpretty.ttyutil.table as ttytable
 import qstatpretty.passthrough_optparse as ptoptparse
 
 
@@ -30,6 +31,16 @@ def parse_args():
         choices=list(qstatpretty.parser.get_parser_names()),
         help="Choose a flavor of grid system (choices: {choices}) [default: \"%default\"]".format(
             choices=", ".join(qstatpretty.parser.get_parser_names())
+        )
+    )
+
+    parser.add_option(
+        "--delimiters",
+        dest="delimiters",
+        default="minimal",
+        choices=list(ttytable.DELIMITERS.keys()),
+        help="Choose a delimiter style for displaying the formatted table (choices: {choices}) [default: \"%default\"]".format(
+            choices=", ".join(ttytable.DELIMITERS.keys())
         )
     )
 
@@ -80,7 +91,7 @@ def main():
     for job in jobs:
         job_states[job['state']] += 1
 
-    qstatpretty.pretty.pretty_table(jobs, parser.table_columns)
+    qstatpretty.pretty.pretty_table(jobs, parser.table_columns, delimiters=ttytable.DELIMITERS[opt.delimiters])
 
     # Setup summary message
     summary_msg = "{n_jobs} job{plural} total"
