@@ -13,7 +13,7 @@ def job_table(jobs, table_format):
     return [header] + body
 
 
-def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], delimiters=ttytable.DELIMITERS_PROFESSIONAL):
+def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], delimiters=ttytable.DELIMITERS_MINIMAL):
 
     if not jobs:
         return

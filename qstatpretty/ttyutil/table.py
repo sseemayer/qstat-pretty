@@ -2,7 +2,7 @@
 
 from qstatpretty.ttyutil.unicode import unicode, ulen
 
-DELIMITERS_DEFAULT = {
+DELIMITERS_FULL = {
 
     'header_tl':     u"┌",
     'header_t':      u"─",
@@ -27,7 +27,7 @@ DELIMITERS_DEFAULT = {
 }
 
 
-DELIMITERS_MINIMAL = {
+DELIMITERS_COLS = {
 
     'header_tl':     u"",
     'header_t':      u"",
@@ -51,7 +51,7 @@ DELIMITERS_MINIMAL = {
 
 }
 
-DELIMITERS_PROFESSIONAL = {
+DELIMITERS_MINIMAL = {
 
     'header_tl':     u"",
     'header_t':      u"",
@@ -76,7 +76,14 @@ DELIMITERS_PROFESSIONAL = {
 }
 
 
-def pretty_table(tbl, colordef, header_row=True, delimiters=DELIMITERS_DEFAULT):
+DELIMITERS = {
+    'full': DELIMITERS_FULL,
+    'cols': DELIMITERS_COLS,
+    'minimal': DELIMITERS_MINIMAL,
+}
+
+
+def pretty_table(tbl, colordef, header_row=True, delimiters=DELIMITERS_FULL):
     from .color import COLOR_BLACK, colortext
 
     d = delimiters
