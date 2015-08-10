@@ -168,3 +168,9 @@ def fit_table(tbl, width, tbldef, delimiters):
         delimiters[sep] = delimiters[sep] * n_sep
 
     return tbl, delimiters
+
+
+TABLE_ALGORITHMS = {
+    'grow': grow_table,
+    'fit': fit_table,
+}

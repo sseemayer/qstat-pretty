@@ -13,11 +13,11 @@ def job_table(jobs, table_format):
     return [header] + body
 
 
-def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], delimiters=ttytable.DELIMITERS_MINIMAL):
+def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], table_algorithm=ttyshrink.fit_table, delimiters=ttytable.DELIMITERS_MINIMAL):
 
     if not jobs:
         return
 
     tbl = job_table(jobs, table_format)
-    tbl, delimiters = ttyshrink.fit_table(tbl, terminal_width, table_format, delimiters)
+    tbl, delimiters = table_algorithm(tbl, terminal_width, table_format, delimiters)
     print(ttytable.pretty_table(tbl, table_format, delimiters=delimiters))
