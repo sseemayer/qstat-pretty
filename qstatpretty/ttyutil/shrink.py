@@ -142,30 +142,18 @@ def fit_table(tbl, width, tbldef, delimiters):
     '''Pad cells to match maximum column width and stretch delimiters'''
 
     max_widths = [
-        max(len(tbldef[cx]['ellipsis'](c)) for c in col[1:])
+        max(len(col[0]), max(len(tbldef[cx]['ellipsis'](c)) for c in col[1:]))
         for cx, col in enumerate(zip(*tbl))
     ]
 
     for rx, row in enumerate(tbl):
         for cx, (w, cell) in enumerate(zip(max_widths, row)):
             if rx > 0:
-                try:
-                    tbl[rx][cx] = tbldef[cx]['ellipsis'](cell, width=w)
-                except TypeError:
-                    raise
+                tbl[rx][cx] = tbldef[cx]['ellipsis'](cell, width=w)
             else:
-                tbl[rx][cx] = "{0: <{1}}".format(str(cell), w)
+                str(cell)
 
-    col_width = sum(max_widths)
-    sep_width = len(max_widths) - 1
-    max_sep = 3
-    n_sep = 1
-    while n_sep < max_sep and (col_width + sep_width * n_sep) < width:
-        n_sep += 1
-    seps = ('header_csep_m', 'header_csep_b', 'body_csep_m')
-
-    for sep in seps:
-        delimiters[sep] = delimiters[sep] * n_sep
+            tbl[rx][cx] = "{0: <{1}}".format(tbl[rx][cx], w)
 
     return tbl, delimiters
 
