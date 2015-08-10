@@ -6,7 +6,7 @@ import qstatpretty.source
 import qstatpretty.pretty
 import qstatpretty.parser
 import qstatpretty.ttyutil.table as ttytable
-import qstatpretty.ttyutil.shrink as ttyshrink
+import qstatpretty.ttyutil.resize as ttyresize
 import qstatpretty.passthrough_optparse as ptoptparse
 
 
@@ -49,9 +49,9 @@ def parse_args():
         "--table",
         dest="table_algorithm",
         default="fit",
-        choices=list(ttyshrink.TABLE_ALGORITHMS.keys()),
+        choices=list(ttyresize.TABLE_ALGORITHMS.keys()),
         help="Choose an algorithm for fitting the table to the terminal (choices: {choices}) [default: \"%default\"]".format(
-            choices=", ".join(ttyshrink.TABLE_ALGORITHMS.keys())
+            choices=", ".join(ttyresize.TABLE_ALGORITHMS.keys())
         )
     )
 
@@ -102,7 +102,7 @@ def main():
     for job in jobs:
         job_states[job['state']] += 1
 
-    qstatpretty.pretty.pretty_table(jobs, parser.table_columns, table_algorithm=ttyshrink.TABLE_ALGORITHMS[opt.table_algorithm], delimiters=ttytable.DELIMITERS[opt.delimiters])
+    qstatpretty.pretty.pretty_table(jobs, parser.table_columns, table_algorithm=ttyresize.TABLE_ALGORITHMS[opt.table_algorithm], delimiters=ttytable.DELIMITERS[opt.delimiters])
 
     # Setup summary message
     summary_msg = "{n_jobs} job{plural} total"

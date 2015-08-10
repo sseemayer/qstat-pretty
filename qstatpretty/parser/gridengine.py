@@ -1,4 +1,4 @@
-import qstatpretty.ttyutil.shrink as ttyshrink
+import qstatpretty.ttyutil.resize as ttyresize
 import qstatpretty.ttyutil.color as ttycolor
 from qstatpretty.parser import parser
 
@@ -101,63 +101,63 @@ GridEngineParser.table_columns = [
         'key': 'number',
         'title': 'job-ID',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(factor=10, overflow=0)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(factor=10, overflow=0)
     },
     {
         'key': 'priority',
         'title': 'priorty',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.float_ellipse,
-        'fval': ttyshrink.simple_value(factor=2, max_width=7)
+        'ellipsis': ttyresize.float_ellipse,
+        'fval': ttyresize.simple_value(factor=2, max_width=7)
     },
     {
         'key': 'name',
         'title': 'name',
         'color': lambda x: ttycolor.COLOR_BLUE,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(factor=10, overflow=2)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(factor=10, overflow=2)
     },
     {
         'key': 'owner',
         'title': 'user',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(factor=3)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(factor=3)
     },
     {
         'key': 'state',
         'title': 'state',
         'color': gridengine_state_color,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(factor=100, max_width=5)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(factor=100, max_width=5)
     },
     {
         'key': 't_submit_start',
         'title': 'submitted/started',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.date_ellipse,
-        'fval': ttyshrink.simple_value(factor=2, max_width=20)
+        'ellipsis': ttyresize.date_ellipse,
+        'fval': ttyresize.simple_value(factor=2, max_width=20)
     },
     {
         'key': 'queue',
         'title': 'queue',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(factor=2)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(factor=2)
     },
     {
         'key': 'slots',
         'title': 'slots',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(max_width=5)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(max_width=5)
     },
     {
         'key': 'tasks',
         'title': 'tasks',
         'color': lambda x: None,
-        'ellipsis': ttyshrink.simple_ellipsis(),
-        'fval': ttyshrink.simple_value(max_width=5)
+        'ellipsis': ttyresize.simple_ellipsis(),
+        'fval': ttyresize.simple_value(max_width=5)
     }
 ]

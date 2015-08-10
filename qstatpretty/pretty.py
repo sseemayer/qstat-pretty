@@ -1,5 +1,5 @@
 import qstatpretty.ttyutil.table as ttytable
-import qstatpretty.ttyutil.shrink as ttyshrink
+import qstatpretty.ttyutil.resize as ttyresize
 import qstatpretty.ttyutil.size as ttysize
 
 
@@ -13,7 +13,7 @@ def job_table(jobs, table_format):
     return [header] + body
 
 
-def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], table_algorithm=ttyshrink.fit_table, delimiters=ttytable.DELIMITERS_MINIMAL):
+def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], table_algorithm=None, delimiters=ttytable.DELIMITERS_MINIMAL):
 
     if not jobs:
         return
