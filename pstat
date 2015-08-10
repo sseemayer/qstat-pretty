@@ -8,10 +8,6 @@ import qstatpretty.parser
 import qstatpretty.passthrough_optparse as ptoptparse
 
 
-def cb_source(option, opt, value, parser, source_type):
-    parser.values.source = source_type(value)
-
-
 EPILOG = """
 pstat is a wrapper for the qstat command of Grid Engine / Torque Resource Manager.
 It takes the XML output from qstat and pretty-prints it.
@@ -23,72 +19,86 @@ All additional non-pstat options will be passed to qstat:
 """
 
 
-parser = ptoptparse.PassThroughOptionParser(version="0.1.0", epilog=EPILOG)
-parser.add_option(
-    "--flavor",
-    dest="flavor",
-    choices=list(qstatpretty.parser.get_parser_names()),
-    help="Choose a flavor of grid system (choices: {choices}) [default: \"%default\"]".format(
-        choices=", ".join(qstatpretty.parser.get_parser_names())
-    )
-)
+def parse_args():
+    def cb_source(option, opt, value, parser, source_type):
+        parser.values.source = source_type(value)
 
-parser.add_option(
-    "--source-local",
-    dest="source",
-    action="store_const",
-    const=qstatpretty.source.source_local(),
-    help="Get job status from a locally running grid manager"
-)
-
-parser.add_option(
-    "--source-ssh",
-    dest="source",
-    action="callback",
-    callback=cb_source,
-    callback_args=(qstatpretty.source.source_ssh,),
-    nargs=1,
-    type=str,
-    metavar="HOSTNAME",
-    help="Get job status by querying via SSH to HOSTNAME"
-)
-
-parser.add_option(
-    "--source-file",
-    dest="source",
-    action="callback",
-    callback=cb_source,
-    callback_args=(qstatpretty.source.source_file,),
-    nargs=1,
-    type=str,
-    metavar="FILENAME",
-    help="Get job status by parsing FILENAME"
-)
-
-opt, args = parser.parse_args()
-
-parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
-jobs = parser.parse_xml(opt.source(parser, args))
-
-job_states = collections.defaultdict(int)
-for job in jobs:
-    job_states[job['state']] += 1
-
-qstatpretty.pretty.pretty_table(jobs, parser.table_columns)
-
-# Setup summary message
-summary_msg = "{n_jobs} job{plural} total"
-summary = {
-    'n_jobs': len(jobs),
-    'plural': 's' if len(jobs) != 1 else ''
-}
-
-if len(jobs) > 0:
-    summary_msg = summary_msg + " ({states})."
-    summary['states'] = ", ".join(
-        "{0}: {1}".format(k, job_states[k])
-        for k in sorted(job_states.keys())
+    parser = ptoptparse.PassThroughOptionParser(version="0.1.0", epilog=EPILOG)
+    parser.add_option(
+        "--flavor",
+        dest="flavor",
+        choices=list(qstatpretty.parser.get_parser_names()),
+        help="Choose a flavor of grid system (choices: {choices}) [default: \"%default\"]".format(
+            choices=", ".join(qstatpretty.parser.get_parser_names())
+        )
     )
 
-# Print qstat summary
-print(summary_msg.format(**summary))
+    parser.add_option(
+        "--source-local",
+        dest="source",
+        action="store_const",
+        const=qstatpretty.source.source_local(),
+        help="Get job status from a locally running grid manager"
+    )
+
+    parser.add_option(
+        "--source-ssh",
+        dest="source",
+        action="callback",
+        callback=cb_source,
+        callback_args=(qstatpretty.source.source_ssh,),
+        nargs=1,
+        type=str,
+        metavar="HOSTNAME",
+        help="Get job status by querying via SSH to HOSTNAME"
+    )
+
+    parser.add_option(
+        "--source-file",
+        dest="source",
+        action="callback",
+        callback=cb_source,
+        callback_args=(qstatpretty.source.source_file,),
+        nargs=1,
+        type=str,
+        metavar="FILENAME",
+        help="Get job status by parsing FILENAME"
+    )
+
+    opt, args = parser.parse_args()
+
+    return opt, args
+
+
+def main():
+    opt, args = parse_args()
+
+    parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
+    jobs = parser.parse_xml(opt.source(parser, args))
+
+    job_states = collections.defaultdict(int)
+    for job in jobs:
+        job_states[job['state']] += 1
+
+    qstatpretty.pretty.pretty_table(jobs, parser.table_columns)
+
+    # Setup summary message
+    summary_msg = "{n_jobs} job{plural} total"
+    summary = {
+        'n_jobs': len(jobs),
+        'plural': 's' if len(jobs) != 1 else ''
+    }
+
+    if len(jobs) > 0:
+        summary_msg = summary_msg + " ({states})."
+        summary['states'] = ", ".join(
+            "{0}: {1}".format(k, job_states[k])
+            for k in sorted(job_states.keys())
+        )
+
+    # Print qstat summary
+    print(summary_msg.format(**summary))
+
+
+if __name__ == '__main__':
+    main()
