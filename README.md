@@ -10,7 +10,7 @@ Some nice features:
   * Table automatically grows with the size of the columns
   * Minimalistic tables
   * Can query local and remote grid status using SSH
-  * Will auto-detect and parse Torque Resource Manager `qstat` (defaults to original GridEngine parser)
+  * Support for Torque Resource Manager, GridEngine
  
 ## Getting started
 
