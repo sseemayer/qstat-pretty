@@ -2,6 +2,7 @@
 
 import collections
 
+import qstatpretty.config
 import qstatpretty.source
 import qstatpretty.pretty
 import qstatpretty.parser
@@ -22,8 +23,11 @@ All additional non-pstat options will be passed to qstat:
 
 
 def parse_args():
-    def cb_source(option, opt, value, parser, source_type):
-        parser.values.source = source_type(value)
+    def cb_source(option, opt, value, parser, *args):
+        parser.values.source = args[0]
+
+        if len(args) == 2:
+            setattr(parser.values, args[1], value)
 
     parser = ptoptparse.PassThroughOptionParser(version="0.1.0", epilog=EPILOG)
     parser.add_option(
@@ -38,7 +42,6 @@ def parse_args():
     parser.add_option(
         "--delimiters",
         dest="delimiters",
-        default="minimal",
         choices=list(ttytable.DELIMITERS.keys()),
         help="Choose a delimiter style for displaying the formatted table (choices: {choices}) [default: \"%default\"]".format(
             choices=", ".join(ttytable.DELIMITERS.keys())
@@ -48,7 +51,6 @@ def parse_args():
     parser.add_option(
         "--table",
         dest="table_algorithm",
-        default="fit",
         choices=list(ttyresize.TABLE_ALGORITHMS.keys()),
         help="Choose an algorithm for fitting the table to the terminal (choices: {choices}) [default: \"%default\"]".format(
             choices=", ".join(ttyresize.TABLE_ALGORITHMS.keys())
@@ -58,8 +60,10 @@ def parse_args():
     parser.add_option(
         "--source-local",
         dest="source",
-        action="store_const",
-        const=qstatpretty.source.source_local(),
+        action="callback",
+        callback=cb_source,
+        callback_args=("local",),
+        nargs=0,
         help="Get job status from a locally running grid manager"
     )
 
@@ -68,7 +72,7 @@ def parse_args():
         dest="source",
         action="callback",
         callback=cb_source,
-        callback_args=(qstatpretty.source.source_ssh,),
+        callback_args=("ssh", "source_ssh_hostname"),
         nargs=1,
         type=str,
         metavar="HOSTNAME",
@@ -80,14 +84,21 @@ def parse_args():
         dest="source",
         action="callback",
         callback=cb_source,
-        callback_args=(qstatpretty.source.source_file,),
+        callback_args=("file", "source_file_path"),
         nargs=1,
         type=str,
         metavar="FILENAME",
         help="Get job status by parsing FILENAME"
     )
 
+    parser.set_defaults(**qstatpretty.config.get_config())
     opt, args = parser.parse_args()
+
+    if not opt.table_algorithm:
+        parser.error("No --table specification!")
+
+    if not opt.delimiters:
+        parser.error("No --delimiters specification!")
 
     return opt, args
 
@@ -95,8 +106,10 @@ def parse_args():
 def main():
     opt, args = parse_args()
 
+    source = qstatpretty.source.SOURCES[opt.source](opt)
+
     parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
-    jobs = parser.parse_xml(opt.source(parser, args))
+    jobs = parser.parse_xml(source(parser, args))
 
     job_states = collections.defaultdict(int)
     for job in jobs:

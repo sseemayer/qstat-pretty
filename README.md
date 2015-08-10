@@ -18,8 +18,11 @@ qstat-pretty requires Python 2.6 or later (Python 3 supported!) and no additiona
 
 To use locally:
   1. Check out qstat-pretty somewhere
-  2. Run `python setup.py build` as non-root
-  3. Link the pstat executable to your bin directory `ln -s "$(pwd)/pstat" ~/local/bin/`
+  2. Copy qstat-pretty.conf.example to one of these locations - and edit to customize:
+       * `/etc/qstat-pretty/qstat-pretty.conf`
+       * `~/.config/qstat-pretty/qstat-pretty.conf`
+
+  3. Link the pstat executable somewhere that can be found in `$PATH`
   4. You can now use the `pstat` command.
 
 qstat-pretty is still in very early development, so give me a message if you have problems getting things to run.
@@ -33,8 +36,8 @@ qstat-pretty is still in very early development, so give me a message if you hav
 pstat supports getting job data from three sources: 
 
   * The local system (by running a `qstat` command) (default!)
-  * Another host (by running `qstat` via `ssh`) (use the `-S [hostname]` option)
-  * An XML file (use the `-X [xmlfile]` option)
+  * Another host (by running `qstat` via `ssh`) (use the `--source-ssh [hostname]` option)
+  * An XML file (use the `--source-file [xmlfile]` option)
 
 All other parameters passed to pstat will be passed on to the qstat command. Examples:
 
@@ -44,12 +47,12 @@ All other parameters passed to pstat will be passed on to the qstat command. Exa
 
   * Show my job status on the cluster head node reachable by `ssh clustmaster`:
 
-        $ pstat -S clustmaster
+        $ pstat --source-ssh clustmaster
 
   * Show job status for all users on clustmaster:
 
-        $ pstat -S clustmaster -u "*"
+        $ pstat --source-ssh clustmaster -u "*"
 
   * Show job status on clustmaster for user jdoe:
 
-        $ pstat -S clustmaster -u jdoe
+        $ pstat --source-ssh clustmaster -u jdoe

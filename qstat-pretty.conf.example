@@ -1,0 +1,24 @@
+[defaults]
+
+## The flavor of cluster system to use.
+##     possible choices: gridengine torque
+flavor = gridengine
+
+## Algorithm for fitting the table to the terminal
+##     possible choices: grow fit
+table_algorithm = grow
+
+## The set of delimiters to use for rendering the table
+##     possible choices: full cols minimal
+delimiters = minimal
+
+
+## The default source for getting cluster status
+##      possible choices: local ssh file
+source = local
+
+## Set a hostname for the default SSH source. Only used if source = ssh
+source_ssh_hostname =
+
+## Set a path for the default file source. Only used if source = file
+source_file_path =

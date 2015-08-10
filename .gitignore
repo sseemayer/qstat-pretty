@@ -40,3 +40,5 @@ nosetests.xml
 .ropeproject
 
 MANIFEST
+
+qstat-pretty.conf
