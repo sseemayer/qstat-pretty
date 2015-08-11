@@ -26,7 +26,7 @@ def source_local(opt):
 
 def source_ssh(opt, ssh_args=[]):
     def get(parser, args):
-        commandline = ['ssh', opt.source_ssh_hostname] + ssh_args + ['--'] + parser.suggest_commandline(args)
+        commandline = ['ssh', opt.source_ssh_hostname] + ssh_args + ['--', 'source /etc/profile; ', " ".join(parser.suggest_commandline(args))]
 
         with subprocess.Popen(commandline, stdout=subprocess.PIPE) as proc:
             return StringIO(proc.stdout.read().decode('utf-8'))
