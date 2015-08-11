@@ -23,3 +23,4 @@ def get_parser_names():
 
 import qstatpretty.parser.gridengine
 import qstatpretty.parser.torque
+import qstatpretty.parser.lsf
