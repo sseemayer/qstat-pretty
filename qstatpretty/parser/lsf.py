@@ -154,7 +154,7 @@ class LSFParser(object):
         jobs.append(res)
 
     @staticmethod
-    def parse_xml(f):
+    def parse(f):
 
         jobs = []
         buffer = StringIO()

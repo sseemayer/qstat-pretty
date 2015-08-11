@@ -109,7 +109,7 @@ def main():
     source = qstatpretty.source.SOURCES[opt.source](opt)
 
     parser = qstatpretty.parser.get_parser_by_name(opt.flavor)
-    jobs = parser.parse_xml(source(parser, args))
+    jobs = parser.parse(source(parser, args))
 
     job_states = collections.defaultdict(int)
     for job in jobs:

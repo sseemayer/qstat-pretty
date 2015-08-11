@@ -55,7 +55,7 @@ class TorqueParser(object):
         return datetime.fromtimestamp(float(t))
 
     @staticmethod
-    def parse_xml(self, f):
+    def parse(self, f):
         try:
             xml = ET.parse(f)
         except ET.ParseError:

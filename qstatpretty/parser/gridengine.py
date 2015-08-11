@@ -45,7 +45,7 @@ class GridEngineParser(object):
         return job
 
     @staticmethod
-    def parse_xml(f):
+    def parse(f):
         try:
             xml = ET.parse(f)
         except ET.ParseError:
