@@ -37,6 +37,7 @@ nosetests.xml
 
 *.xml
 .*.swp
+.*.swo
 .ropeproject
 
 MANIFEST
