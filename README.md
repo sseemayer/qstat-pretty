@@ -1,14 +1,14 @@
 # qstat-pretty
 
-qstat-pretty is a parser and pretty-printer for the output of the Grid Engine or Torque Resource Manager `qstat` program. It will parse the XML output produced by `qstat` and display it in a table.
+qstat-pretty is a parser and pretty-printer for the output of the Grid Engine or Torque Resource Manager `qstat` programs or the Platform LSF `bjobs` program. It will parse the output produced by `qstat` / `bjobs` and display it in a table.
 
 
 ![pstat screenshot](http://i.imgur.com/WkYaAyt.png)
 
 Some nice features:
 
-  * Table automatically grows with the size of the columns
-  * Minimalistic tables
+  * Table automatically grows with the size of the columns (up to the terminal width)
+  * Different table styles to choose from
   * Can query local and remote grid status using SSH
   * Support for Torque Resource Manager, GridEngine
  
@@ -33,13 +33,13 @@ qstat-pretty is still in very early development, so give me a message if you hav
 
 ## Advanced Usage
 
-pstat supports getting job data from three sources: 
+pstat supports getting job data from three sources. This can be configured using the `qstat-pretty.conf` file or via the command line: 
 
-  * The local system (by running a `qstat` command) (default!)
-  * Another host (by running `qstat` via `ssh`) (use the `--source-ssh [hostname]` option)
-  * An XML file (use the `--source-file [xmlfile]` option)
+  * The local system (by running the status command) (default!)
+  * Another host (by running a command via `ssh`) (use the `--source-ssh [hostname]` option)
+  * A file (use the `--source-file [path]` option)
 
-All other parameters passed to pstat will be passed on to the qstat command. Examples:
+All other parameters passed to pstat will be passed on to the actual status command. Examples:
 
   * Show my job status on the current system:
 
@@ -49,10 +49,13 @@ All other parameters passed to pstat will be passed on to the qstat command. Exa
 
         $ pstat --source-ssh clustmaster
 
-  * Show job status for all users on clustmaster:
+  * Show job status for all users on clustmaster (for Platform LSF, use `-u all`):
 
         $ pstat --source-ssh clustmaster -u "*"
 
   * Show job status on clustmaster for user jdoe:
 
         $ pstat --source-ssh clustmaster -u jdoe
+
+## License
+GPLv2 or later
