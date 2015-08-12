@@ -10,7 +10,7 @@ Some nice features:
   * Table automatically grows with the size of the columns (up to the terminal width)
   * Different table styles to choose from
   * Can query local and remote grid status using SSH
-  * Support for Torque Resource Manager, GridEngine
+  * Support for Torque Resource Manager, GridEngine, Platform LSF
  
 ## Getting started
 
