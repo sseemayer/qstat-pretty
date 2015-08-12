@@ -1,7 +1,7 @@
 [defaults]
 
 ## The flavor of cluster system to use.
-##     possible choices: gridengine torque
+##     possible choices: gridengine torque lsf
 flavor = gridengine
 
 ## Algorithm for fitting the table to the terminal
