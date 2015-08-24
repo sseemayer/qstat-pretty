@@ -149,7 +149,8 @@ class LSFParser(object):
                     hosts = logv.split("> <")
                     res['slots'] = ", ".join(hosts)
 
-        res['t_submit_start'] = res['t_start'] or res['t_submit']
+        if 't_start' in res:
+            res['t_submit_start'] = res['t_start'] or res['t_submit']
 
         jobs.append(res)
 
