@@ -53,7 +53,12 @@ class GridEngineParser(object):
 
         root = xml.getroot()
 
-        job_lists = itertools.chain(root.find('queue_info'), root.find('job_info'))
+        job_lists = []
+        for cand in ('queue_info', 'job_info'):
+            match = root.find(cand)
+            if match:
+                job_lists.extend(match)
+
         jobs = [GridEngineParser.process_job(job_list) for job_list in job_lists]
 
         return jobs
