@@ -28,8 +28,13 @@ def source_ssh(opt, ssh_args=[]):
     def get(parser, args):
         commandline = ['ssh', opt.source_ssh_hostname] + ssh_args + ['--', 'source /etc/profile; ', " ".join("'{0}'".format(a) for a in parser.suggest_commandline(args))]
 
-        with subprocess.Popen(commandline, stdout=subprocess.PIPE) as proc:
-            return StringIO(proc.stdout.read().decode('utf-8'))
+        try:
+            proc = subprocess.Popen(commandline, stdout=subprocess.PIPE)
+            res = StringIO(proc.stdout.read().decode("utf-8"))
+        finally:
+            proc.stdout.close()
+
+        return res
 
     return get
 
