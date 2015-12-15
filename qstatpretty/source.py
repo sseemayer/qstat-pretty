@@ -1,15 +1,12 @@
 import subprocess
 
-try:
-    from io import StringIO
-except ImportError:
-    from cStringIO import StringIO
+from io import BytesIO
 
 
 def source_file(opt):
     def get(_p, _a):
-        with open(opt.source_file_path, "r") as f:
-            return StringIO(f.read())
+        with open(opt.source_file_path, "rb") as f:
+            return BytesIO(f.read())
 
     return get
 
@@ -20,7 +17,7 @@ def source_local(opt):
 
         try:
             proc = subprocess.Popen(commandline, stdout=subprocess.PIPE)
-            res = StringIO(proc.stdout.read().decode("utf-8"))
+            res = BytesIO(proc.stdout.read())
         finally:
             proc.stdout.close()
 
@@ -35,7 +32,7 @@ def source_ssh(opt, ssh_args=[]):
 
         try:
             proc = subprocess.Popen(commandline, stdout=subprocess.PIPE)
-            res = StringIO(proc.stdout.read().decode("utf-8"))
+            res = BytesIO(proc.stdout.read())
         finally:
             proc.stdout.close()
 

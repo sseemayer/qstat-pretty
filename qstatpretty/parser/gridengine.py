@@ -3,7 +3,8 @@ import qstatpretty.ttyutil.color as ttycolor
 from qstatpretty.parser import parser
 
 import datetime
-import itertools
+
+from io import BytesIO
 
 try:
     import xml.etree.cElementTree as ET
@@ -46,10 +47,8 @@ class GridEngineParser(object):
 
     @staticmethod
     def parse(f):
-        try:
-            xml = ET.parse(f)
-        except ET.ParseError:
-            return []  # no jobs!
+
+        xml = ET.parse(f)
 
         root = xml.getroot()
 

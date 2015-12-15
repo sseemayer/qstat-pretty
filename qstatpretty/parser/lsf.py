@@ -156,6 +156,7 @@ class LSFParser(object):
 
     @staticmethod
     def parse(f):
+        f = StringIO(f.read().decode("utf-8"))
 
         jobs = []
         buffer = StringIO()

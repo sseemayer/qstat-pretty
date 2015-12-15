@@ -56,10 +56,7 @@ class TorqueParser(object):
 
     @staticmethod
     def parse(self, f):
-        try:
-            xml = ET.parse(f)
-        except ET.ParseError:
-            return []  # no jobs!
+        xml = ET.parse(f)
 
         root = xml.getroot()
 
