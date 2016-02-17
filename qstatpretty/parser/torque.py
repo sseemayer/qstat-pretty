@@ -55,7 +55,7 @@ class TorqueParser(object):
         return datetime.fromtimestamp(float(t))
 
     @staticmethod
-    def parse(self, f):
+    def parse(f):
         xml = ET.parse(f)
 
         root = xml.getroot()
