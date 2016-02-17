@@ -32,8 +32,7 @@ class TorqueParser(object):
         job = {}
         for key, (tag, f) in fields.items():
             val = j.find(tag)
-            if val is not None:
-                job[key] = f(val)
+            job[key] = f(val.text) if val is not None else None
 
         job['t_submit_start'] = job['t_submit'] or job['t_start']
 
@@ -52,7 +51,7 @@ class TorqueParser(object):
 
     @staticmethod
     def parse_time(t):
-        return datetime.fromtimestamp(float(t))
+        return datetime.datetime.fromtimestamp(float(t))
 
     @staticmethod
     def parse(f):
@@ -96,7 +95,7 @@ def torque_state_color(s):
         return None
 
 
-TorqueParser.table_format = [
+TorqueParser.table_columns = [
     {
         'key': 'number',
         'title': 'job-ID',
