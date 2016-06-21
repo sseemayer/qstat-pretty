@@ -19,7 +19,10 @@ class GridEngineParser(object):
 
     @staticmethod
     def parse_time(t):
-        return datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+        try:
+            return datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+        except:
+            return datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S.%f')
 
     @staticmethod
     def process_job(j):
