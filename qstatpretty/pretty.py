@@ -20,4 +20,4 @@ def pretty_table(jobs, table_format, terminal_width=ttysize.terminal_size()[0], 
 
     tbl = job_table(jobs, table_format)
     tbl, delimiters = table_algorithm(tbl, terminal_width, table_format, delimiters)
-    print(ttytable.pretty_table(tbl, table_format, delimiters=delimiters))
+    print(ttytable.pretty_table(tbl, table_format, delimiters=delimiters).encode('utf-8'))
