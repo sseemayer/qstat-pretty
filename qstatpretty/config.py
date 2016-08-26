@@ -14,7 +14,17 @@ CONFIGS_ORDER = [
 
 def get_config(configs_order=CONFIGS_ORDER):
     parser = configparser.SafeConfigParser()
-    parser.read(configs_order)
-    cfg = parser.items('defaults')
+    try:
+        parser.read(configs_order)
+        cfg = parser.items('defaults')
+    except:
+        cfg = {
+            'flavor': 'gridengine',
+            'table_algorithm': 'grow',
+            'delimiters': 'minimal',
+            'source': 'local',
+            'source_ssh_hostname': '',
+            'source_file_path': ''
+        }
 
     return dict(cfg)
